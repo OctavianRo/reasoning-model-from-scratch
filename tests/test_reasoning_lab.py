@@ -1,7 +1,7 @@
 import unittest
 
 from reasoning_lab.dataset import make_dataset
-from reasoning_lab.distill import distill_teacher
+from reasoning_lab.distill import distill_teacher, measure_distillation
 from reasoning_lab.evaluate import evaluate
 from reasoning_lab.inference_scaling import self_consistency
 from reasoning_lab.models import DirectAnswerPolicy, TraceReasoningPolicy
@@ -32,6 +32,16 @@ class ReasoningLabTests(unittest.TestCase):
         student = distill_teacher(teacher, problems)
         self.assertEqual(evaluate(student, problems).accuracy, 1.0)
 
+    def test_distillation_report_has_clear_metrics(self):
+        problems = make_dataset(20, seed=4)
+        baseline = DirectAnswerPolicy(error_rate=0.5, seed=6)
+        teacher = TraceReasoningPolicy(step_error_rate=0.0)
+        student = distill_teacher(teacher, problems)
+        report = measure_distillation(baseline, teacher, student, problems)
+        self.assertGreater(report.accuracy_gain, 0.0)
+        self.assertEqual(report.teacher_retention, 1.0)
+        self.assertEqual(report.teacher_call_reduction, 1.0)
+
     def test_direct_answer_policy_is_not_perfect_with_errors(self):
         problems = make_dataset(100, seed=5)
         policy = DirectAnswerPolicy(error_rate=0.5, seed=6)
@@ -41,4 +51,3 @@ class ReasoningLabTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

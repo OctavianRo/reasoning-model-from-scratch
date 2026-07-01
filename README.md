@@ -100,6 +100,21 @@ The project compares several policies:
 - `RewardTunedPolicy`: updates its reliability from verifiable rewards.
 - `DistilledPolicy`: learns compact operation templates from a teacher.
 
+The distillation section reports concrete metrics:
+
+```text
+Baseline accuracy:            76.0%
+Teacher accuracy:             100.0%
+Distilled student accuracy:   100.0%
+Accuracy gain vs baseline:    +24.0%
+Teacher accuracy retained:    100.0%
+Teacher calls before:         25
+Teacher calls after:          0
+Teacher call reduction:       100.0%
+```
+
+The key takeaway is that the student keeps the teacher's accuracy on this task while avoiding teacher calls at inference time. In this toy project, that is the measurable performance improvement from distillation.
+
 This is intentionally small. My goal is to make the reasoning pipeline visible before replacing the toy policy with a neural LLM.
 
 ## Study Notes

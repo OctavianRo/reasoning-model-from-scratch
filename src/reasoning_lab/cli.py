@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 
 from .dataset import make_dataset
-from .distill import distill_teacher
+from .distill import distill_teacher, measure_distillation
 from .evaluate import evaluate
 from .inference_scaling import self_consistency
 from .models import DirectAnswerPolicy, RewardTunedPolicy, TraceReasoningPolicy
@@ -40,6 +40,12 @@ def main() -> None:
 
     teacher = TraceReasoningPolicy(step_error_rate=0.0, seed=41)
     student = distill_teacher(teacher, problems[: max(1, args.problems // 2)])
+    distillation = measure_distillation(
+        baseline=DirectAnswerPolicy(seed=11),
+        teacher=TraceReasoningPolicy(step_error_rate=0.0, seed=41),
+        student=student,
+        eval_problems=problems,
+    )
 
     print("Reasoning Model Lab")
     print("===================")
@@ -50,7 +56,16 @@ def main() -> None:
     print(f"Reward-tuned before:          {before.accuracy:.1%}")
     print(f"Reward-tuned after:           {after.accuracy:.1%}")
     print(f"Reward error-rate history:    {[round(x, 3) for x in history]}")
-    print(f"Distilled student accuracy:   {evaluate(student, problems).accuracy:.1%}")
+    print("\nDistillation Metrics")
+    print("--------------------")
+    print(f"Baseline accuracy:            {distillation.baseline_accuracy:.1%}")
+    print(f"Teacher accuracy:             {distillation.teacher_accuracy:.1%}")
+    print(f"Distilled student accuracy:   {distillation.student_accuracy:.1%}")
+    print(f"Accuracy gain vs baseline:    {distillation.accuracy_gain:+.1%}")
+    print(f"Teacher accuracy retained:    {distillation.teacher_retention:.1%}")
+    print(f"Teacher calls before:         {distillation.teacher_calls_before}")
+    print(f"Teacher calls after:          {distillation.teacher_calls_after}")
+    print(f"Teacher call reduction:       {distillation.teacher_call_reduction:.1%}")
 
     example = problems[0]
     print("\nExample")
@@ -61,4 +76,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
