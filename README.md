@@ -1,12 +1,12 @@
-# Build a Reasoning Model From Scratch
+# My Reasoning Model Learning Lab
 
-An interview-friendly learning project for understanding how reasoning models are built on top of ordinary language models.
+I created this project for my own understanding of how reasoning models are built on top of ordinary language models. It is also structured so I can walk through it in interviews and explain what I learned step by step.
 
-This repository is inspired by Sebastian Raschka's *Build a Reasoning Model (From Scratch)* MEAP. It does not copy the book or replace it. Instead, it turns the core ideas into a small runnable project you can step through, explain in interviews, and extend as you read.
+The learning path is inspired by Sebastian Raschka's *Build a Reasoning Model (From Scratch)* MEAP. This repository does not copy the book or replace it. I used the PDF as a study guide and turned the main ideas into a small runnable project that helps me reason about the concepts in code.
 
 ## What This Project Demonstrates
 
-Reasoning models are not magic wrappers around chatbots. The practical pipeline is:
+The main idea I wanted to understand is that reasoning models are not magic wrappers around chatbots. A practical reasoning-model pipeline looks like this:
 
 1. Start with a base model that can generate text.
 2. Define tasks where the answer can be checked.
@@ -16,7 +16,7 @@ Reasoning models are not magic wrappers around chatbots. The practical pipeline 
 6. Train or tune behavior with reward signals.
 7. Distill stronger reasoning behavior into a cheaper student model.
 
-The code here uses a tiny arithmetic reasoning environment so the whole project runs locally with the Python standard library. The same ideas scale to real LLMs such as Qwen, Llama, or GPT-style decoder models when you swap the toy policy for a neural model.
+I kept the code intentionally small by using arithmetic word problems. That lets me focus on the reasoning pipeline itself without needing a GPU or a large model. The same structure can later be extended to real LLMs such as Qwen, Llama, or GPT-style decoder models.
 
 ## Pipeline
 
@@ -73,7 +73,7 @@ python -m unittest discover -s tests
 
 ## What You Should Be Able To Explain
 
-After stepping through this project, you should be able to say:
+After stepping through this project, I should be able to explain:
 
 - A base LLM predicts the next token, but a reasoning model is optimized to spend tokens on useful intermediate steps.
 - Reasoning quality needs task-specific evaluation, not just "the answer sounds good."
@@ -84,7 +84,7 @@ After stepping through this project, you should be able to say:
 
 ## How The Demo Works
 
-The toy task asks the model to solve short arithmetic word problems:
+The toy task asks a policy to solve short arithmetic word problems:
 
 ```text
 Question: Maya has 6 marbles, buys 4 more, then gives away 3. How many remain?
@@ -100,11 +100,11 @@ The project compares several policies:
 - `RewardTunedPolicy`: updates its reliability from verifiable rewards.
 - `DistilledPolicy`: learns compact operation templates from a teacher.
 
-This is intentionally small. The goal is to make the reasoning pipeline visible before replacing the toy policy with a neural LLM.
+This is intentionally small. My goal is to make the reasoning pipeline visible before replacing the toy policy with a neural LLM.
 
-## Source Notes
+## Study Notes
 
-The PDF outline used for this repository emphasizes:
+The PDF outline I used while studying emphasizes:
 
 - defining reasoning as producing intermediate steps before a final answer,
 - loading and generating text with a base LLM,
@@ -113,7 +113,7 @@ The PDF outline used for this repository emphasizes:
 - training with reinforcement learning and verifiable rewards,
 - distilling reasoning behavior for efficient inference.
 
-All explanations and code in this repository are original project material.
+All explanations and code in this repository are my own project material, written as a study artifact.
 
 ## Next GitHub Steps
 
@@ -123,6 +123,6 @@ git remote add origin https://github.com/YOUR_USERNAME/reasoning-model-from-scra
 git push -u origin main
 ```
 
-## Suggested Interview Framing
+## How I Would Explain This In An Interview
 
 "I built a small reasoning-model lab to understand the full pipeline before scaling it to real LLMs. It starts with a weak direct-answer policy, adds explicit intermediate reasoning, evaluates final-answer accuracy, uses self-consistency to trade inference compute for quality, then demonstrates reward tuning and distillation with verifiable arithmetic tasks."

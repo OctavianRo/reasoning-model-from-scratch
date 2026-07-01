@@ -1,8 +1,8 @@
-# Interview Guide
+# My Interview Guide
 
 ## 60-Second Pitch
 
-I built a small reasoning-model lab to understand the pipeline behind modern reasoning LLMs. It starts with a weak direct-answer baseline, adds intermediate reasoning traces, evaluates final-answer accuracy, improves results with self-consistency, then demonstrates reward tuning and distillation on verifiable tasks.
+I built this small reasoning-model lab for my own understanding of how modern reasoning LLMs are developed. I started with a weak direct-answer baseline, added intermediate reasoning traces, evaluated final-answer accuracy, improved results with self-consistency, then demonstrated reward tuning and distillation on verifiable tasks.
 
 ## Architecture Talking Points
 
@@ -14,11 +14,11 @@ I built a small reasoning-model lab to understand the pipeline behind modern rea
 - Reward tuning updates behavior using verifier feedback.
 - Distillation compresses teacher behavior into a smaller student.
 
-## Questions You Can Answer
+## Questions I Can Answer
 
 **Why not just prompt the model to think step by step?**
 
-Prompting helps, but you still need evaluation. A model can produce a plausible trace and still land on the wrong answer.
+Prompting helps, but I still need evaluation. A model can produce a plausible trace and still land on the wrong answer.
 
 **What does inference-time scaling buy you?**
 
@@ -34,7 +34,7 @@ The strongest reasoning process may be too slow or expensive. Distillation train
 
 **How would you scale this from toy code to a real LLM?**
 
-Replace the toy policy with a small decoder LLM, keep the evaluator, generate supervised reasoning traces, add self-consistency decoding, then fine-tune with supervised learning or reward-based optimization.
+I would replace the toy policy with a small decoder LLM, keep the evaluator, generate supervised reasoning traces, add self-consistency decoding, then fine-tune with supervised learning or reward-based optimization.
 
 ## Demo Script
 
@@ -43,4 +43,3 @@ Replace the toy policy with a small decoder LLM, keep the evaluator, generate su
 3. Explain why self-consistency improves robustness.
 4. Show reward-tuning before and after.
 5. Open `src/reasoning_lab/evaluate.py` to emphasize verifiable rewards.
-

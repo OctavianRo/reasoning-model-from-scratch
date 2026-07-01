@@ -6,7 +6,7 @@ Command:
 python -m reasoning_lab.cli --problems 25 --samples 7
 ```
 
-Expected shape of the output:
+Expected shape of my output:
 
 ```text
 Reasoning Model Lab
@@ -28,4 +28,3 @@ Final: ...
 ```
 
 The exact percentages can change because several policies intentionally sample mistakes.
-

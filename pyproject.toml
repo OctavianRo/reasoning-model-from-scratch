@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "reasoning-model-from-scratch"
 version = "0.1.0"
-description = "A small, interview-friendly project that demonstrates the reasoning model pipeline."
+description = "My small learning project for understanding the reasoning model pipeline."
 readme = "README.md"
 requires-python = ">=3.10"
-authors = [{ name = "Your Name" }]
+authors = [{ name = "Project Owner" }]
 dependencies = []
 
 [project.scripts]
@@ -16,4 +16,3 @@ reasoning-lab = "reasoning_lab.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-

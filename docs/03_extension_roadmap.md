@@ -1,6 +1,6 @@
-# Extension Roadmap
+# My Extension Roadmap
 
-Use this roadmap to turn the project into a deeper GitHub portfolio piece.
+I can use this roadmap to turn the project into a deeper GitHub portfolio piece as my understanding improves.
 
 ## Milestone 1: Better Tasks
 
@@ -44,4 +44,3 @@ Use this roadmap to turn the project into a deeper GitHub portfolio piece.
 - Add a short demo video or GIF.
 - Add a table of experiment results.
 - Add a "what I learned" section after each milestone.
-
