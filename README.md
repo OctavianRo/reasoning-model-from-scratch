@@ -64,6 +64,70 @@ reasoning-model-from-scratch/
     sample_run.md
 ```
 
+## Knowledge Graph
+
+The diagram below is the project's **code knowledge graph** — the actual
+module dependencies extracted from the source with
+[`graphifyy`](https://github.com/safishamsi/graphify) (AST analysis, code only,
+no docs). Arrows point from a module to what it uses. `dataset.py` (the
+`Problem` type) and `models.py` (the policies and `Response`) are the core
+abstractions everything flows through; `cli.py` orchestrates the full pipeline.
+
+```mermaid
+flowchart TD
+    subgraph core["Core data types"]
+        dataset["dataset.py<br/>Problem · make_dataset()"]
+        models["models.py<br/>DirectAnswer / TraceReasoning /<br/>RewardTuned / Distilled policies · Response"]
+    end
+
+    verifiers["verifiers.py<br/>verify_response() · rewards · extract_final_answer()"]
+
+    subgraph methods["Reasoning and training methods"]
+        evaluate["evaluate.py<br/>evaluate() · EvalResult"]
+        inference["inference_scaling.py<br/>best_of_n() · self-consistency"]
+        refine["refine.py<br/>self_refine()"]
+        grpo["grpo.py<br/>sample_rollout_group() · advantages"]
+        train["train_rl.py<br/>reward optimization loop"]
+        distill["distill.py<br/>distill_teacher() · DistillationReport"]
+    end
+
+    cli["cli.py<br/>main() — end-to-end walkthrough"]
+    tests["tests<br/>ReasoningLabTests"]
+
+    models --> dataset
+    verifiers --> models
+    verifiers --> dataset
+    evaluate --> models
+    evaluate --> verifiers
+    inference --> models
+    refine --> models
+    refine --> verifiers
+    grpo --> models
+    grpo --> verifiers
+    train --> grpo
+    train --> evaluate
+    distill --> models
+    distill --> evaluate
+
+    cli --> models
+    cli --> inference
+    cli --> refine
+    cli --> train
+    cli --> distill
+    cli --> evaluate
+
+    tests --> models
+    tests --> evaluate
+    tests --> grpo
+```
+
+An **interactive** version (zoom, pan, 147 nodes / 401 edges, clustered by
+module) is generated to `docs/knowledge-graph.html`. GitHub can't run it inline,
+so open it locally, or view it rendered via
+[htmlpreview](https://htmlpreview.github.io/?https://github.com/OctavianRo/reasoning-model-from-scratch/blob/main/docs/knowledge-graph.html).
+Regenerate after code changes with `graphify update .` (code-only rules live in
+`.graphifyignore`).
+
 ## Quick Start
 
 ```bash

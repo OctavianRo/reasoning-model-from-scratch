@@ -8,3 +8,7 @@ dist/
 build/
 *.egg-info/
 
+# graphify: generated graph output and the local install venv
+graphify-out/
+.graphify-venv/
+

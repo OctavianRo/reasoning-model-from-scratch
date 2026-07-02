@@ -1,0 +1,18 @@
+# Build the knowledge graph from CODE ONLY.
+# Keep book chapters, study notes, READMEs and other prose out of the graph.
+
+# Prose / docs file types
+*.md
+*.mdx
+*.markdown
+*.rst
+*.txt
+*.html
+
+# Doc-only directories
+docs/
+examples/
+
+# graphify's own output and the throwaway install venv
+graphify-out/
+.graphify-venv/
