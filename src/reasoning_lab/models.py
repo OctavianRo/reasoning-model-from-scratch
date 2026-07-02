@@ -14,6 +14,7 @@ class Response:
 
     trace: str
     final_answer: int
+    confidence: float = 0.5
 
     def render(self) -> str:
         if self.trace:
@@ -30,9 +31,11 @@ class DirectAnswerPolicy:
 
     def solve(self, problem: Problem) -> Response:
         answer = problem.start + problem.add - problem.subtract
+        confidence = 0.72
         if self.rng.random() < self.error_rate:
             answer += self.rng.choice([-2, -1, 1, 2])
-        return Response(trace="", final_answer=answer)
+            confidence = 0.38
+        return Response(trace="", final_answer=answer, confidence=confidence)
 
 
 class TraceReasoningPolicy:
@@ -45,16 +48,18 @@ class TraceReasoningPolicy:
     def solve(self, problem: Problem) -> Response:
         after_add = problem.start + problem.add
         answer = after_add - problem.subtract
+        confidence = 0.86
 
         if self.rng.random() < self.step_error_rate:
             answer += self.rng.choice([-1, 1])
+            confidence = 0.48
 
         trace = (
             f"Start with {problem.start}. "
             f"Add {problem.add} to get {after_add}. "
             f"Subtract {problem.subtract} to get {answer}."
         )
-        return Response(trace=trace, final_answer=answer)
+        return Response(trace=trace, final_answer=answer, confidence=confidence)
 
 
 class RewardTunedPolicy(TraceReasoningPolicy):
@@ -82,4 +87,4 @@ class DistilledPolicy:
     def solve(self, problem: Problem) -> Response:
         key = (problem.add, problem.subtract)
         trace = self.templates.get(key, problem.gold_trace)
-        return Response(trace=trace, final_answer=problem.answer)
+        return Response(trace=trace, final_answer=problem.answer, confidence=0.92)

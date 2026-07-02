@@ -5,5 +5,7 @@ __all__ = [
     "models",
     "evaluate",
     "inference_scaling",
+    "verifiers",
+    "refine",
+    "grpo",
 ]
-

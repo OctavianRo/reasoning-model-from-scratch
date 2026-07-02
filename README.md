@@ -11,10 +11,11 @@ The main idea I wanted to understand is that reasoning models are not magic wrap
 1. Start with a base model that can generate text.
 2. Define tasks where the answer can be checked.
 3. Make the model produce intermediate steps before the final answer.
-4. Measure accuracy with an evaluator.
-5. Spend more inference compute by sampling several attempts and voting.
-6. Train or tune behavior with reward signals.
-7. Distill stronger reasoning behavior into a cheaper student model.
+4. Measure final-answer accuracy, trace consistency, response format, and reward.
+5. Spend more inference compute by sampling several attempts, voting, ranking, or refining.
+6. Train or tune behavior with verifiable reward signals.
+7. Track rollout metrics such as rewards, advantages, entropy, response length, policy ratios, and KL drift.
+8. Distill stronger reasoning behavior into a cheaper student model.
 
 I kept the code intentionally small by using arithmetic word problems. That lets me focus on the reasoning pipeline itself without needing a GPU or a large model. The same structure can later be extended to real LLMs such as Qwen, Llama, or GPT-style decoder models.
 
@@ -25,10 +26,12 @@ flowchart LR
     A["Base generator"] --> B["Reasoning traces"]
     B --> C["Verifier / evaluator"]
     C --> D["Inference-time scaling"]
-    C --> E["Reward tuning"]
-    D --> F["Better final answers"]
-    E --> F
-    F --> G["Distilled student"]
+    D --> E["Self-refinement"]
+    C --> F["Reward / GRPO diagnostics"]
+    F --> G["Reward tuning"]
+    E --> H["Better final answers"]
+    G --> H
+    H --> I["Distilled student"]
 ```
 
 ## Repository Map
@@ -40,9 +43,12 @@ reasoning-model-from-scratch/
   src/reasoning_lab/
     dataset.py              # synthetic reasoning problems
     models.py               # base, trace, reward-tuned, distilled policies
-    evaluate.py             # exact-match evaluator
-    inference_scaling.py    # self-consistency / majority vote
-    train_rl.py             # lightweight reward optimization demo
+    evaluate.py             # final-answer, trace, format, and reward evaluator
+    verifiers.py            # answer extraction, trace checks, composite rewards
+    inference_scaling.py    # self-consistency and best-of-N selection
+    refine.py               # verifier-guided self-refinement loop
+    grpo.py                 # rollout groups, advantages, clipping, diagnostics
+    train_rl.py             # lightweight reward optimization and diagnostics
     distill.py              # teacher-to-student distillation demo
     cli.py                  # command line walkthrough
   tests/
@@ -51,6 +57,9 @@ reasoning-model-from-scratch/
     01_reasoning_pipeline.md
     02_interview_guide.md
     03_extension_roadmap.md
+    04_refinement_playbook.md
+    05_pdf_study_map.md
+    06_book_chapter_study_notes.md
   examples/
     sample_run.md
 ```
@@ -97,8 +106,25 @@ The project compares several policies:
 - `DirectAnswerPolicy`: answers directly and sometimes makes arithmetic mistakes.
 - `TraceReasoningPolicy`: writes intermediate steps before answering.
 - `self_consistency`: samples several traces and votes on the final answer.
+- `best_of_n`: samples several traces and chooses the strongest candidate by verifier-style reward.
+- `self_refine`: critiques and revises a candidate answer using verifier feedback.
 - `RewardTunedPolicy`: updates its reliability from verifiable rewards.
 - `DistilledPolicy`: learns compact operation templates from a teacher.
+
+The enriched evaluator separates the signals a real reasoning-model training run would care about:
+
+- **Answer correctness**: whether the final answer matches ground truth.
+- **Extractability**: whether the final answer appears in a consistent parseable format.
+- **Trace consistency**: whether the shown reasoning steps match the arithmetic.
+- **Composite reward**: a simple weighted reward used for ranking and diagnostics.
+
+The GRPO-style module does not train neural weights. Instead, it makes the required bookkeeping visible:
+
+- sample several rollouts for the same prompt,
+- score each rollout with a verifier,
+- normalize rewards into advantages within the group,
+- inspect entropy, response length, policy ratios, clipped objectives, KL drift, and format pass rate,
+- use those metrics to reason about whether a training run is improving, collapsing, or over-optimizing a weak reward.
 
 The distillation section reports concrete metrics:
 
@@ -115,7 +141,7 @@ Teacher call reduction:       100.0%
 
 The key takeaway is that the student keeps the teacher's accuracy on this task while avoiding teacher calls at inference time. In this toy project, that is the measurable performance improvement from distillation.
 
-This is intentionally small. My goal is to make the reasoning pipeline visible before replacing the toy policy with a neural LLM.
+This is intentionally small. My goal is to make the reasoning pipeline visible before replacing the toy policy with a neural LLM. The enriched version now models the deeper refinement checklist: reliable evaluation, inference-time scaling, verifier-guided refinement, reward-based training signals, stability diagnostics, and distillation.
 
 ## Study Notes
 
@@ -125,7 +151,9 @@ The PDF outline I used while studying emphasizes:
 - loading and generating text with a base LLM,
 - evaluating reasoning behavior,
 - improving answers with inference-time compute,
+- using self-refinement to critique and revise answers,
 - training with reinforcement learning and verifiable rewards,
+- monitoring GRPO stability with reward, advantage, entropy, clipping, KL, and format metrics,
 - distilling reasoning behavior for efficient inference.
 
 All explanations and code in this repository are my own project material, written as a study artifact.
